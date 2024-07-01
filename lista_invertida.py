@@ -8,7 +8,7 @@ class ListaInvertida:
     
     def carrega_dados(self, dados_iniciais):
         for registro in dados_iniciais:
-            self.add_registro(registro)     # Carrega uma lista de dicionarios (dados_iniciais)
+            self.add_registro(registro)     # Carrega uma lista de dicionarios (dados_iniciais, cada registro é um dicionario)
 
         
     def add_registro(self, registro):
