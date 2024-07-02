@@ -53,6 +53,8 @@ class ListaInvertida:
         if not self.preco_indice[preco_registro]:
             del self.preco_indice[preco_registro] 
 
+        return registro
+    
     
     def busca_simples(self, campo, valor):
         if campo == 'categoria':
@@ -81,3 +83,114 @@ class ListaInvertida:
     def exibe_dados(self):
         for registro in self.dados.values():
             print(registro)                         # Exibe registros em self.dados
+
+
+def main():
+
+    lista = ListaInvertida()
+
+    dados_iniciais = [
+        {'id': 1, 'nome': 'smartphone', 'categoria': 'eletronicos', 'marca': 'samsung', 'preco': 999},
+        {'id': 2, 'nome': 'notebook', 'categoria': 'eletronicos', 'marca': 'dell', 'preco': 1500},
+        {'id': 3, 'nome': 'geladeira', 'categoria': 'eletrodomesticos', 'marca': 'electrolux', 'preco': 2000},
+        {'id': 4, 'nome': 'televisão', 'categoria': 'eletronicos', 'marca': 'samsung', 'preco': 1200},
+    ]
+
+    while True:
+        print("\nMenu")
+        print("1 - CARGA DE DADOS")
+        print("2 - ADICIONAR ELEMENTO")
+        print("3 - REMOVER ELEMENTO")
+        print("4 - BUSCA SIMPLES")
+        print("5 - BUSCA COMPOSTA")
+        print("6 - EXIBIR DADOS")
+        print("7 - SAIR")
+
+        entrada = input("\nEscolha uma opção: ")
+
+        if entrada == '1':
+            lista.carrega_dados(dados_iniciais)
+            print("\nDados carregados com sucesso!")
+
+
+        elif entrada == '2':
+            print("\nDigite os dados do elemento a adicionar.")
+
+            while True:
+                id = int(input("\nID (número inteiro): "))
+                if id in lista.dados:
+                    print("Erro: ID já existe. Tente novamente.")
+                else:
+                    break
+            
+            nome = input("\nNome: ")
+            categoria = input("\nCategoria: ")
+            marca = input("\nMarca: ")
+            preco = int(input("\nPreço (número inteiro): "))
+
+            lista.add_registro({'id': id, 'nome': nome, 'categoria': categoria, 'marca': marca, 'preco': preco})
+            print("\nElemento adicionado com sucesso!")
+
+
+        elif entrada == '3':
+            id = input("\nDigite o ID do elemento a remover: ")
+            
+            removido = lista.remove_registro(id)
+            if not removido:
+                print("Elemento não encontrado.")
+            else:
+                print("Elemento removido com sucesso!")
+
+ 
+        elif entrada == '4':
+            campo = input("Campo para busca (categoria, marca ou preço): ")
+            valor = input("Valor para busca: ")
+            if campo == 'preco':
+                valor = int(valor)
+            
+            resultados = lista.busca_simples(campo, valor)
+
+            if not resultados:
+                print("Nenhum elemento corresponde à busca.")
+                continue
+
+            print("\nElementos encontrados: ")
+            for id in resultados:
+                print(lista.dados[id])
+
+
+        elif entrada == '5':
+            campo1 = input("Primeiro campo para busca (categoria, marca ou preco): ")
+            valor1 = input("Primeiro valor para busca: ")
+            if campo1 == 'preco':
+                valor1 = int(valor1)
+
+            campo2 = input("Segundo campo para busca (categoria, marca ou preco): ")
+            valor2 = input("Segundo valor para busca: ")
+            if campo2 == 'preco':
+                valor2 = int(valor2)
+
+            resultados = lista.busca_composta(campo1, valor1, campo2, valor2)
+            
+            if not resultados:
+                print("Nenhum elemnto corresponde à busca.")
+                continue
+            
+            print("\nElementos encontrados: ")
+            for id in resultados:
+                print(lista.dados[id])
+
+
+        elif entrada == '6':
+            if lista.dados:
+                print()
+                lista.exibe_dados()
+            else:
+                print("A lista está vazia.")
+
+        elif entrada == '7':
+            exit(0)
+
+
+if __name__ == "__main__":
+    main()
