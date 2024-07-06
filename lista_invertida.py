@@ -35,33 +35,35 @@ class ListaInvertida:
 
 
     def remove_registro(self, id):
-        if id in self.data:
-            registro = self.data.pop(id)
+        if id in self.dados:
+            registro = self.dados.pop(id)
 
-        categoria_registro = registro['categoria']
-        self.categoria_indice[categoria_registro].remove(id)        # Remove id do indice invertido
-        if not self.categoria_indice[categoria_registro]:
-            del self.categoria_indice[categoria_registro]           # Caso a categoria fique vazia, remove ela do indice invertido
+            categoria_registro = registro['categoria']
+            self.categoria_indice[categoria_registro].remove(id)        # Remove id do indice invertido
+            if not self.categoria_indice[categoria_registro]:
+                del self.categoria_indice[categoria_registro]           # Caso a categoria fique vazia, remove ela do indice invertido
 
-        marca_registro = registro['marca']
-        self.marca_indice[marca_registro].remove(id)        
-        if not self.marca_indice[marca_registro]:
-            del self.marca_indice[marca_registro]
+            marca_registro = registro['marca']
+            self.marca_indice[marca_registro].remove(id)
+            if not self.marca_indice[marca_registro]:
+                del self.marca_indice[marca_registro]
 
-        preco_registro = registro['preco']
-        self.preco_indice[preco_registro].remove(id)        
-        if not self.preco_indice[preco_registro]:
-            del self.preco_indice[preco_registro] 
+            preco_registro = registro['preco']
+            self.preco_indice[preco_registro].remove(id)
+            if not self.preco_indice[preco_registro]:
+                del self.preco_indice[preco_registro]
 
-        return registro
+            return registro
+        else:
+            return None
     
     
     def busca_simples(self, campo, valor):
-        if campo == 'categoria':
+        if campo.lower() == 'categoria':
             return self.categoria_indice.get(valor, [])     # Verifica qual é o campo, e entao retorna os IDs dentro da chave com o valor
-        elif campo == 'marca':                              # correspondente. Ou seja, a lista (dentro do dicionario de indices invertidos)
+        elif campo.lower() == 'marca':                              # correspondente. Ou seja, a lista (dentro do dicionario de indices invertidos)
             return self.marca_indice.get(valor, [])         # cuja chave é o valor passado como parametro.
-        elif campo == 'preco':
+        elif campo.lower() == 'preco':
             return self.preco_indice.get(valor, [])
         return []
     
@@ -81,8 +83,50 @@ class ListaInvertida:
         return busca_filtrada       # encaixavam no primeiro.
 
     def exibe_dados(self):
+        for registro in self.dados.values():                            # Exibe registros em self.dados
+            print(f"\nID: {registro['id']}")
+            print(f"Nome do produto: {registro['nome']}")
+            print(f"Categoria: {registro['categoria']}")
+            print(f"Marca: {registro['marca']}")
+            print(f"Preço: R${registro['preco']}")
+
+    def get_id(self):
         for registro in self.dados.values():
-            print(registro)                         # Exibe registros em self.dados
+            print(f"ID {registro['id']}")
+
+    def get_categoria(self):
+        sem_repeticao = []
+        vistos = set()
+        for registro in self.dados.values():
+            if registro['categoria'] not in vistos:
+                sem_repeticao.append(registro['categoria'])
+                vistos.add(registro['categoria'])
+        print(f"{sem_repeticao}")
+
+    def get_marca(self):
+        sem_repeticao = []
+        vistos = set()
+        for registro in self.dados.values():
+            if registro['marca'] not in vistos:
+                sem_repeticao.append(registro['marca'])
+                vistos.add(registro['marca'])
+        print(f"{sem_repeticao}")
+
+    def get_preco(self):
+        sem_repeticao = []
+        vistos = set()
+        for registro in self.dados.values():
+            if registro['preco'] not in vistos:
+                sem_repeticao.append(registro['preco'])
+                vistos.add(registro['preco'])
+        print(f"{sem_repeticao}")
+
+    def verifica_entrada(self, min, num, max):
+        while not (min <= num <= max):
+            print("Valor inválido!")
+            num = int(input(f"Tente novamente um valor entre {min} e {max}: "))
+
+        return num
 
 
 def main():
@@ -96,24 +140,25 @@ def main():
         {'id': 4, 'nome': 'televisão', 'categoria': 'eletronicos', 'marca': 'samsung', 'preco': 1200},
     ]
 
+    lista.carrega_dados(dados_iniciais)          #carrega os dados iniciais
+
     while True:
-        print("\nMenu")
-        print("1 - CARGA DE DADOS")
-        print("2 - ADICIONAR ELEMENTO")
-        print("3 - REMOVER ELEMENTO")
-        print("4 - BUSCA SIMPLES")
-        print("5 - BUSCA COMPOSTA")
-        print("6 - EXIBIR DADOS")
-        print("7 - SAIR")
+        print()
+        print("=" * 24)
+        print("          MENU          ")
+        print("=" * 24)
+        print("1 - ADICIONAR ELEMENTO")
+        print("2 - REMOVER ELEMENTO")
+        print("3 - BUSCA SIMPLES")
+        print("4 - BUSCA COMPOSTA")
+        print("5 - EXIBIR DADOS")
+        print("6 - SAIR")
 
-        entrada = input("\nEscolha uma opção: ")
-
-        if entrada == '1':
-            lista.carrega_dados(dados_iniciais)
-            print("\nDados carregados com sucesso!")
+        entrada = int(input("\nEscolha uma opção: "))
+        entrada = lista.verifica_entrada(1, entrada, 6)
 
 
-        elif entrada == '2':
+        if entrada == 1:
             print("\nDigite os dados do elemento a adicionar.")
 
             while True:
@@ -132,26 +177,38 @@ def main():
             print("\nElemento adicionado com sucesso!")
 
 
-        elif entrada == '3':
-            id = input("\nDigite o ID do elemento a remover: ")
-            
+        elif entrada == 2:
+            print("Possiveis IDs:")
+            print()
+            lista.get_id()
+            id = int(input("\nDigite o ID do elemento a remover: "))
+
             removido = lista.remove_registro(id)
             if not removido:
-                print("Elemento não encontrado.")
+                print("\nElemento não encontrado.")
             else:
-                print("Elemento removido com sucesso!")
+                print("\nElemento removido com sucesso!")
 
  
-        elif entrada == '4':
-            campo = input("Campo para busca (categoria, marca ou preço): ")
-            valor = input("Valor para busca: ")
+        elif entrada == 3:
+            campo = input("\ninforme por qual informação deseja fazer a busca(categoria, marca ou preco): ")
+            if campo == 'categoria':
+                print("\nPosséveis caregorias:")
+                lista.get_categoria()
+            if campo == 'marca':
+                print("\nPossíveis marcas:")
+                lista.get_marca()
+            if campo == 'preco':
+                print("\nPossíveis preços:")
+                lista.get_preco()
+            valor = input("\nValor para busca: ")
             if campo == 'preco':
                 valor = int(valor)
-            
+
             resultados = lista.busca_simples(campo, valor)
 
             if not resultados:
-                print("Nenhum elemento corresponde à busca.")
+                print("\nNenhum elemento corresponde à busca.")
                 continue
 
             print("\nElementos encontrados: ")
@@ -159,21 +216,42 @@ def main():
                 print(lista.dados[id])
 
 
-        elif entrada == '5':
+        elif entrada == 4:
             campo1 = input("Primeiro campo para busca (categoria, marca ou preco): ")
-            valor1 = input("Primeiro valor para busca: ")
+            if campo1 == 'categoria':
+                print("\nPosséveis caregorias:")
+                lista.get_categoria()
+            if campo1 == 'marca':
+                print("\nPossíveis marcas:")
+                lista.get_marca()
+            if campo1 == 'preco':
+                print("\nPossíveis preços:")
+                lista.get_preco()
+
+            valor1 = input("\nPrimeiro valor para busca: ")
+
             if campo1 == 'preco':
                 valor1 = int(valor1)
 
             campo2 = input("Segundo campo para busca (categoria, marca ou preco): ")
-            valor2 = input("Segundo valor para busca: ")
+            if campo2 == 'categoria':
+                print("\nPosséveis caregorias:")
+                lista.get_categoria()
+            if campo2 == 'marca':
+                print("\nPossíveis marcas:")
+                lista.get_marca()
+            if campo2 == 'preco':
+                print("\nPossíveis preços:")
+                lista.get_preco()
+
+            valor2 = input("\nSegundo valor para busca: ")
             if campo2 == 'preco':
                 valor2 = int(valor2)
 
             resultados = lista.busca_composta(campo1, valor1, campo2, valor2)
             
             if not resultados:
-                print("Nenhum elemnto corresponde à busca.")
+                print("\nNenhum elemnto corresponde à busca.")
                 continue
             
             print("\nElementos encontrados: ")
@@ -181,14 +259,15 @@ def main():
                 print(lista.dados[id])
 
 
-        elif entrada == '6':
+        elif entrada == 5:
             if lista.dados:
                 print()
                 lista.exibe_dados()
             else:
                 print("A lista está vazia.")
 
-        elif entrada == '7':
+        elif entrada == 6:
+            print("\nPrograma Finalizado!")
             exit(0)
 
 
